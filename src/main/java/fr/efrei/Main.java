@@ -1,17 +1,31 @@
 package fr.efrei;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        Jeu jeu = new Jeu(1, "Rocket Arena", "Action");
+        Organisateur org = new Organisateur("Alice", "alice@example.com");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+        Tournoi tournoi = org.creerTournoi("Championnat 2025", jeu);
+
+        tournoi.inscrireJoueur(new Joueur(1, "PlayerOne", "p1@example.com"));
+        tournoi.inscrireJoueur(new Joueur(2, "GamerX", "gx@example.com"));
+        tournoi.inscrireJoueur(new Joueur(3, "NoobMaster", "nm@example.com"));
+        tournoi.inscrireJoueur(new Joueur(4, "ProGamer", "pg@example.com"));
+        tournoi.inscrireJoueur(new Joueur(5, "LuckyPlayer", "lp@example.com"));
+
+        System.out.println("Début du " + tournoi);
+        org.gererTournoi(tournoi);
+
+        System.out.println("Matches joués :");
+        for (Match m : tournoi.getListeMatchs()) {
+            System.out.println(m);
+        }
+
+        Joueur vainqueur = tournoi.getVainqueur();
+        if (vainqueur != null) {
+            System.out.println("Vainqueur du tournoi : " + vainqueur);
+        } else {
+            System.out.println("Aucun vainqueur déterminé.");
         }
     }
 }
