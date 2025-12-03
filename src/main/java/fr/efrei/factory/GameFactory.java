@@ -1,3 +1,5 @@
+//@author John, Jules, Lucas
+
 package fr.efrei.factory;
 
 import fr.efrei.domain.Game;
