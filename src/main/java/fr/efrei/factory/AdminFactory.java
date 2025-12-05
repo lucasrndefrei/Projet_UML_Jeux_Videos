@@ -14,4 +14,3 @@ public final class AdminFactory {
         return CustomerFactory.create(id, name, contactNumber, password, Role.ADMIN);
     }
 }
-

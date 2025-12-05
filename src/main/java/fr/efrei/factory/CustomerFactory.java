@@ -21,12 +21,14 @@ public final class CustomerFactory {
         validateNotBlank(name, "name");
         validateNotBlank(contactNumber, "contactNumber");
 
+        Integer credits = (role == null || role == Role.CUSTOMER) ? 0 : null;
         return new Customer.Builder()
                 .setId(finalId)
                 .setName(name.trim())
                 .setContactNumber(contactNumber.trim())
                 .setPassword(password != null ? password : "")
                 .setRole(role != null ? role : Role.CUSTOMER)
+                .setCredits(credits)
                 .build();
     }
 

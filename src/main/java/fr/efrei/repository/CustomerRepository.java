@@ -15,8 +15,8 @@ public class CustomerRepository {
     }
 
     public Customer save(Customer customer) {
-        String sql = "INSERT INTO customers (id, name, contact_number, password, role) VALUES (?, ?, ?, ?, ?) " +
-                     "ON DUPLICATE KEY UPDATE name = VALUES(name), contact_number = VALUES(contact_number), password = VALUES(password), role = VALUES(role)";
+        String sql = "INSERT INTO customers (id, name, contact_number, password, role, credits) VALUES (?, ?, ?, ?, ?, ?) " +
+                     "ON DUPLICATE KEY UPDATE name = VALUES(name), contact_number = VALUES(contact_number), password = VALUES(password), role = VALUES(role), credits = VALUES(credits)";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, customer.getId());
@@ -24,6 +24,8 @@ public class CustomerRepository {
             stmt.setString(3, customer.getContactNumber());
             stmt.setString(4, customer.getPassword());
             stmt.setString(5, customer.getRole().name());
+            if (customer.getCredits() == null) stmt.setNull(6, java.sql.Types.INTEGER);
+            else stmt.setInt(6, customer.getCredits());
             stmt.executeUpdate();
             return customer;
         } catch (SQLException e) {
@@ -43,13 +45,15 @@ public class CustomerRepository {
             if (rs.next()) {
                 String roleStr = rs.getString("role");
                 fr.efrei.domain.Role role = (roleStr != null) ? fr.efrei.domain.Role.valueOf(roleStr) : fr.efrei.domain.Role.CUSTOMER;
-                return CustomerFactory.create(
-                    rs.getString("id"),
-                    rs.getString("name"),
-                    rs.getString("contact_number"),
-                    rs.getString("password"),
-                    role
-                );
+                Integer credits = rs.getObject("credits") != null ? (Integer) rs.getObject("credits") : null;
+                return new Customer.Builder()
+                    .setId(rs.getString("id"))
+                    .setName(rs.getString("name"))
+                    .setContactNumber(rs.getString("contact_number"))
+                    .setPassword(rs.getString("password"))
+                    .setRole(role)
+                    .setCredits(credits)
+                    .build();
             }
         } catch (SQLException e) {
             System.err.println("Error while searching for customer: " + e.getMessage());
@@ -68,13 +72,15 @@ public class CustomerRepository {
             if (rs.next()) {
                 String roleStr = rs.getString("role");
                 fr.efrei.domain.Role role = (roleStr != null) ? fr.efrei.domain.Role.valueOf(roleStr) : fr.efrei.domain.Role.CUSTOMER;
-                return CustomerFactory.create(
-                    rs.getString("id"),
-                    rs.getString("name"),
-                    rs.getString("contact_number"),
-                    rs.getString("password"),
-                    role
-                );
+                Integer credits = rs.getObject("credits") != null ? (Integer) rs.getObject("credits") : null;
+                return new Customer.Builder()
+                    .setId(rs.getString("id"))
+                    .setName(rs.getString("name"))
+                    .setContactNumber(rs.getString("contact_number"))
+                    .setPassword(rs.getString("password"))
+                    .setRole(role)
+                    .setCredits(credits)
+                    .build();
             }
         } catch (SQLException e) {
             System.err.println("Error while searching for customer: " + e.getMessage());
@@ -92,13 +98,15 @@ public class CustomerRepository {
             while (rs.next()) {
                 String roleStr = rs.getString("role");
                 fr.efrei.domain.Role role = (roleStr != null) ? fr.efrei.domain.Role.valueOf(roleStr) : fr.efrei.domain.Role.CUSTOMER;
-                customers.add(CustomerFactory.create(
-                    rs.getString("id"),
-                    rs.getString("name"),
-                    rs.getString("contact_number"),
-                    rs.getString("password"),
-                    role
-                ));
+                Integer credits = rs.getObject("credits") != null ? (Integer) rs.getObject("credits") : null;
+                customers.add(new Customer.Builder()
+                    .setId(rs.getString("id"))
+                    .setName(rs.getString("name"))
+                    .setContactNumber(rs.getString("contact_number"))
+                    .setPassword(rs.getString("password"))
+                    .setRole(role)
+                    .setCredits(credits)
+                    .build());
             }
         } catch (SQLException e) {
             System.err.println("Error while retrieving customers: " + e.getMessage());
@@ -119,5 +127,15 @@ public class CustomerRepository {
             return false;
         }
     }
-}
 
+    public void addCredits(String customerId, int creditsToAdd) {
+        String sql = "UPDATE customers SET credits = credits + ? WHERE id = ? AND (role IS NULL OR role = 'CUSTOMER')";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, creditsToAdd);
+            stmt.setString(2, customerId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error while adding credits: " + e.getMessage());
+        }
+    }
+}

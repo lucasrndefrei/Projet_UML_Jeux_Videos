@@ -1,4 +1,3 @@
-
 package fr.efrei.domain;
 
 import java.io.Serializable;
@@ -10,6 +9,7 @@ public class Customer implements Serializable {
     private final String contactNumber;
     private final String password;
     private Role role;
+    private final Integer credits; // null for admin, >=0 for customer
 
     private Customer(Builder builder) {
         this.id = builder.id;
@@ -17,6 +17,7 @@ public class Customer implements Serializable {
         this.contactNumber = builder.contactNumber;
         this.password = builder.password;
         this.role = builder.role != null ? builder.role : Role.CUSTOMER;
+        this.credits = builder.credits;
     }
 
     public String getId() { return id; }
@@ -31,12 +32,14 @@ public class Customer implements Serializable {
         private String contactNumber;
         private String password;
         private Role role;
+        private Integer credits;
 
         public Builder setId(String id) { this.id = id; return this; }
         public Builder setName(String name) { this.name = name; return this; }
         public Builder setContactNumber(String contactNumber) { this.contactNumber = contactNumber; return this; }
         public Builder setPassword(String password) { this.password = password; return this; }
         public Builder setRole(Role role) { this.role = role; return this; }
+        public Builder setCredits(Integer credits) { this.credits = credits; return this; }
 
         public Customer build() { return new Customer(this); }
     }
@@ -52,6 +55,8 @@ public class Customer implements Serializable {
     public boolean isAdmin() {
         return this.role == Role.ADMIN;
     }
+
+    public Integer getCredits() { return credits; }
 
     @Override
     public boolean equals(Object o) {

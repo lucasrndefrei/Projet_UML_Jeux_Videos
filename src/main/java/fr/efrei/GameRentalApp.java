@@ -170,6 +170,7 @@ public class GameRentalApp {
                         Game g = gamesForSale.get(i);
                         System.out.println((i + 1) + ") " + g.getTitle() + " - " + String.format("%.2f €", g.getPrice()));
                     }
+                    Helper.pause(2000);
 
                     String sel = Helper.read("Which game do you want to buy?");
                     if (!Helper.isNumber(sel)) {
@@ -192,9 +193,16 @@ public class GameRentalApp {
                             id, customer, selectedGame, LocalDate.now(), selectedGame.getPrice()
                         );
                         saleRepo.save(sale);
+                        // Ajout de crédits fidélité pour l'achat
+                        if (!customer.isAdmin()) {
+                            customerRepo.addCredits(customer.getId(), 10); // 10 points pour un achat
+                            System.out.println("You earned 10 loyalty credits!");
+                        }
                         System.out.println("Great! You bought: " + selectedGame.getTitle());
+                        Helper.pause(2000);
                     } else {
                         Helper.error("Something went wrong with the purchase...");
+                        Helper.pause(2000);
                     }
                     continue;
                 }
@@ -213,6 +221,7 @@ public class GameRentalApp {
                         Rental r = activeRentals.get(i);
                         System.out.println((i + 1) + ") " + r.getGame().getTitle() + " (due: " + r.getReturnDate() + ")");
                     }
+                    Helper.pause(2000);
 
                     String sel = Helper.read("Which one do you want to return?");
                     if (!Helper.isNumber(sel)) {
@@ -231,8 +240,10 @@ public class GameRentalApp {
                     if (rentalRepo.markAsReturned(rental.getRentalId())) {
                         gameRepo.updateAvailability(rental.getGame().getId(), true);
                         System.out.println("Thanks! " + rental.getGame().getTitle() + " has been returned.");
+                        Helper.pause(2000);
                     } else {
                         Helper.error("Couldn't process the return...");
+                        Helper.pause(2000);
                     }
                     continue;
                 }
@@ -261,6 +272,7 @@ public class GameRentalApp {
                         Game g = availableGames.get(i);
                         System.out.println((i + 1) + ") " + g.getTitle() + " - " + String.format("%.2f €", g.getPrice()));
                     }
+                    Helper.pause(2000);
 
                     String sel = Helper.read("Which game?");
                     if (!Helper.isNumber(sel)) {
@@ -295,9 +307,15 @@ public class GameRentalApp {
 
                         if (rental != null) {
                             gameRepo.updateAvailability(selectedGame.getId(), false);
+                            if (!customer.isAdmin()) {
+                                customerRepo.addCredits(customer.getId(), 2); // 2 points pour une location
+                                System.out.println("You earned 2 loyalty credits!");
+                            }
                             System.out.println("Perfect! You rented " + rental.getGame().getTitle() + " until " + rental.getReturnDate());
+                            Helper.pause(2000);
                         } else {
                             Helper.error("Something went wrong...");
+                            Helper.pause(2000);
                         }
                     } catch (Exception e) {
                         Helper.error("Error: " + e.getMessage());
@@ -397,9 +415,9 @@ public class GameRentalApp {
                 for (int i = 0; i < games.size(); i++) {
                     Game g = games.get(i);
                     String status = g.isAvailable() ? "available" : "not available";
-                    System.out.println((i + 1) + ") " + g.getTitle() + " (" + g.getPlatform() + ") - " +
-                                     String.format("%.2f €", g.getPrice()) + " [" + status + "]");
+                    System.out.println((i + 1) + ") " + g.getTitle() + " (" + g.getPlatform() + ") - " + String.format("%.2f €", g.getPrice()) + " [" + status + "]");
                 }
+                Helper.pause(2000);
 
                 String selection = Helper.read("Which game do you want to delete?");
                 if (!Helper.isNumber(selection)) {
@@ -438,9 +456,9 @@ public class GameRentalApp {
                 for (int i = 0; i < games.size(); i++) {
                     Game g = games.get(i);
                     String status = g.isAvailable() ? "Available" : "Not available";
-                    System.out.println("game-" + (i + 1) + " | " + g.getTitle() + " (" + g.getPlatform() + ") - " +
-                                     String.format("%.2f €", g.getPrice()) + " - " + status);
+                    System.out.println("game-" + (i + 1) + " | " + g.getTitle() + " (" + g.getPlatform() + ") - " + String.format("%.2f €", g.getPrice()) + " - " + status);
                 }
+                Helper.pause(2000);
                 continue;
             }
 
@@ -466,6 +484,7 @@ public class GameRentalApp {
                 System.out.println("  Returned: " + returnedRentals);
                 System.out.println("\nSales:");
                 System.out.println("  Total games sold: " + totalSales);
+                Helper.pause(2000);
                 continue;
             }
 
@@ -487,14 +506,17 @@ public class GameRentalApp {
                 if ("1".equals(action)) {
                     System.out.println("\nAll users:");
                     for (Customer c : users) {
-                        System.out.println("- " + c.getName() + " (" + c.getContact() + ") - " + c.getRole());
+                        String creditsStr = c.isAdmin() ? "None" : String.valueOf(c.getCredits());
+                        System.out.println("- " + c.getName() + " (" + c.getContact() + ") - " + c.getRole() + " - Credits: " + creditsStr);
                     }
+                    Helper.pause(2000);
 
                 } else if ("2".equals(action)) {
                     System.out.println("\nUsers:");
                     for (int i = 0; i < users.size(); i++) {
                         Customer c = users.get(i);
-                        System.out.println((i + 1) + ") " + c.getName() + " (" + c.getContact() + ") - " + c.getRole());
+                        String creditsStr = c.isAdmin() ? "None" : String.valueOf(c.getCredits());
+                        System.out.println((i + 1) + ") " + c.getName() + " (" + c.getContact() + ") - " + c.getRole() + " - Credits: " + creditsStr);
                     }
 
                     String selection = Helper.read("Which user to delete?");

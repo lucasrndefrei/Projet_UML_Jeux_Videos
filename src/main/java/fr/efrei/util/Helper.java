@@ -68,4 +68,13 @@ public final class Helper {
     public static void error(String message) {
         System.out.println(message);
     }
+
+    /**Pause l'exécution pendant le nombre de millisecondes indiqué.**/
+    public static void pause(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }
