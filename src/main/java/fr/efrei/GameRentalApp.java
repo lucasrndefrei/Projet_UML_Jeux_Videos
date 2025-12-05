@@ -4,6 +4,7 @@ import fr.efrei.domain.Customer;
 import fr.efrei.domain.Game;
 import fr.efrei.domain.GamePlatform;
 import fr.efrei.domain.Rental;
+import fr.efrei.factory.AdminFactory;
 import fr.efrei.factory.CustomerFactory;
 import fr.efrei.factory.RentalFactory;
 import fr.efrei.repository.CustomerRepository;
@@ -18,6 +19,9 @@ import java.util.List;
 
 public class GameRentalApp {
 
+    // secret admin password (change or externalize in config)
+    private static final String SECRET_ADMIN_PASSWORD = "secret";
+
     public static void main(String[] args) {
         System.out.println("Welcome to our shop");
 
@@ -31,7 +35,10 @@ public class GameRentalApp {
 
         while (true) {
             Helper.line();
-            String contact = Helper.read("Contact (or 'exit' to quit)");
+
+
+            // then ask phone number (used both for login and registration)
+            String contact = Helper.read("Phone number (or 'exit' to quit)");
             if ("exit".equalsIgnoreCase(contact)) {
                 System.out.println("Goodbye.");
                 return;
@@ -41,6 +48,7 @@ public class GameRentalApp {
             Customer existingCustomer = customerRepo.findByContact(contact);
 
             if (existingCustomer != null) {
+
                 // existing user - check password
                 int attempts = 0;
                 boolean authenticated = false;
@@ -62,7 +70,22 @@ public class GameRentalApp {
                     continue;
                 }
             } else {
-                // new user - let's register them
+                // first ask whether the user is (or wants to be) an admin
+                String adminChoice = Helper.read("Are you an Admin? (yes/no) or 'exit' to quit");
+                if ("exit".equalsIgnoreCase(adminChoice)) {
+                    System.out.println("Goodbye.");
+                    return;
+                }
+                boolean wantsAdmin = "yes".equalsIgnoreCase(adminChoice);
+                // new user - registration (we already know whether they want admin)
+                if (wantsAdmin) {
+                    String adminPass = Helper.read("Admin password");
+                    if (!SECRET_ADMIN_PASSWORD.equals(adminPass)) {
+                        Helper.error("Wrong admin password!");
+                        continue;
+                    }
+                }
+
                 String name = Helper.read("Name");
                 String pass = Helper.read("Choose a password");
 
@@ -72,7 +95,11 @@ public class GameRentalApp {
                 }
 
                 try {
-                    customer = CustomerFactory.create(null, name, contact, pass);
+                    if (wantsAdmin) {
+                        customer = AdminFactory.create(null, name, contact, pass);
+                    } else {
+                        customer = CustomerFactory.create(null, name, contact, pass);
+                    }
                     customer = customerRepo.save(customer);
                     if (customer != null) {
                         System.out.println("Account created! Welcome " + customer.getName());
@@ -102,9 +129,9 @@ public class GameRentalApp {
                 System.out.println("5) Quit");
 
                 String choice = Helper.read("Your choice");
-                if (!Helper.isNumber(choice)) { 
-                    Helper.error("Please enter a number"); 
-                    continue; 
+                if (!Helper.isNumber(choice)) {
+                    Helper.error("Please enter a number");
+                    continue;
                 }
 
                 int ch = Integer.parseInt(choice);
@@ -145,15 +172,15 @@ public class GameRentalApp {
                     }
 
                     String sel = Helper.read("Which game do you want to buy?");
-                    if (!Helper.isNumber(sel)) { 
-                        Helper.error("Please enter a valid number"); 
-                        continue; 
+                    if (!Helper.isNumber(sel)) {
+                        Helper.error("Please enter a valid number");
+                        continue;
                     }
 
                     int index = Integer.parseInt(sel) - 1;
-                    if (index < 0 || index >= gamesForSale.size()) { 
-                        Helper.error("That number is not in the list"); 
-                        continue; 
+                    if (index < 0 || index >= gamesForSale.size()) {
+                        Helper.error("That number is not in the list");
+                        continue;
                     }
 
                     Game selectedGame = gamesForSale.get(index);
@@ -188,15 +215,15 @@ public class GameRentalApp {
                     }
 
                     String sel = Helper.read("Which one do you want to return?");
-                    if (!Helper.isNumber(sel)) { 
-                        Helper.error("Please enter a number"); 
-                        continue; 
+                    if (!Helper.isNumber(sel)) {
+                        Helper.error("Please enter a number");
+                        continue;
                     }
 
                     int index = Integer.parseInt(sel) - 1;
-                    if (index < 0 || index >= activeRentals.size()) { 
-                        Helper.error("Invalid number"); 
-                        continue; 
+                    if (index < 0 || index >= activeRentals.size()) {
+                        Helper.error("Invalid number");
+                        continue;
                     }
 
                     Rental rental = activeRentals.get(index);
@@ -236,15 +263,15 @@ public class GameRentalApp {
                     }
 
                     String sel = Helper.read("Which game?");
-                    if (!Helper.isNumber(sel)) { 
-                        Helper.error("Enter a valid number"); 
-                        continue; 
+                    if (!Helper.isNumber(sel)) {
+                        Helper.error("Enter a valid number");
+                        continue;
                     }
 
                     int index = Integer.parseInt(sel) - 1;
-                    if (index < 0 || index >= availableGames.size()) { 
-                        Helper.error("That's not a valid choice"); 
-                        continue; 
+                    if (index < 0 || index >= availableGames.size()) {
+                        Helper.error("That's not a valid choice");
+                        continue;
                     }
 
                     Game selectedGame = availableGames.get(index);
@@ -283,8 +310,8 @@ public class GameRentalApp {
         }
     }
 
-    private static void handleAdminMenu(Customer admin, GameRepository gameRepo, 
-                                       RentalRepository rentalRepo, CustomerRepository customerRepo, 
+    private static void handleAdminMenu(Customer admin, GameRepository gameRepo,
+                                       RentalRepository rentalRepo, CustomerRepository customerRepo,
                                        SaleRepository saleRepo) {
         while (true) {
             Helper.line();
@@ -298,9 +325,9 @@ public class GameRentalApp {
             System.out.println("7) Quit");
 
             String choice = Helper.read("What do you want to do?");
-            if (!Helper.isNumber(choice)) { 
-                Helper.error("Please enter a number"); 
-                continue; 
+            if (!Helper.isNumber(choice)) {
+                Helper.error("Please enter a number");
+                continue;
             }
 
             int option = Integer.parseInt(choice);
@@ -370,20 +397,20 @@ public class GameRentalApp {
                 for (int i = 0; i < games.size(); i++) {
                     Game g = games.get(i);
                     String status = g.isAvailable() ? "available" : "not available";
-                    System.out.println((i + 1) + ") " + g.getTitle() + " (" + g.getPlatform() + ") - " + 
+                    System.out.println((i + 1) + ") " + g.getTitle() + " (" + g.getPlatform() + ") - " +
                                      String.format("%.2f €", g.getPrice()) + " [" + status + "]");
                 }
 
                 String selection = Helper.read("Which game do you want to delete?");
-                if (!Helper.isNumber(selection)) { 
-                    Helper.error("Enter a number"); 
-                    continue; 
+                if (!Helper.isNumber(selection)) {
+                    Helper.error("Enter a number");
+                    continue;
                 }
 
                 int index = Integer.parseInt(selection) - 1;
-                if (index < 0 || index >= games.size()) { 
-                    Helper.error("Invalid number"); 
-                    continue; 
+                if (index < 0 || index >= games.size()) {
+                    Helper.error("Invalid number");
+                    continue;
                 }
 
                 Game gameToDelete = games.get(index);
@@ -411,7 +438,7 @@ public class GameRentalApp {
                 for (int i = 0; i < games.size(); i++) {
                     Game g = games.get(i);
                     String status = g.isAvailable() ? "Available" : "Not available";
-                    System.out.println("game-" + (i + 1) + " | " + g.getTitle() + " (" + g.getPlatform() + ") - " + 
+                    System.out.println("game-" + (i + 1) + " | " + g.getTitle() + " (" + g.getPlatform() + ") - " +
                                      String.format("%.2f €", g.getPrice()) + " - " + status);
                 }
                 continue;
@@ -471,15 +498,15 @@ public class GameRentalApp {
                     }
 
                     String selection = Helper.read("Which user to delete?");
-                    if (!Helper.isNumber(selection)) { 
-                        Helper.error("Enter a number"); 
-                        continue; 
+                    if (!Helper.isNumber(selection)) {
+                        Helper.error("Enter a number");
+                        continue;
                     }
 
                     int index = Integer.parseInt(selection) - 1;
-                    if (index < 0 || index >= users.size()) { 
-                        Helper.error("Invalid number"); 
-                        continue; 
+                    if (index < 0 || index >= users.size()) {
+                        Helper.error("Invalid number");
+                        continue;
                     }
 
                     Customer userToDelete = users.get(index);
