@@ -10,8 +10,8 @@ public class Game implements Serializable {
     private final String genre;
     private final GamePlatform platform;
     private final GameType type;
-    private boolean available;
     private final double price;
+    private boolean available;
 
     private Game(Builder builder) {
         this.id = builder.id;
@@ -27,8 +27,8 @@ public class Game implements Serializable {
     public String getTitle() { return title; }
     public String getGenre() { return genre; }
     public GamePlatform getPlatform() { return platform; }
-    public GameType getType() { return type; }
     public boolean isAvailable() { return available; }
+    public GameType getType() { return type; }
     public double getPrice() { return price; }
 
     public void setAvailable(boolean available) { this.available = available; }
@@ -39,7 +39,7 @@ public class Game implements Serializable {
         private String genre;
         private GamePlatform platform;
         private boolean available = true;
-        private fr.efrei.domain.GameType type = fr.efrei.domain.GameType.RENTAL;
+        private GameType type = GameType.RENTAL;
         private double price = 0.0;
 
         public Builder setId(String id) { this.id = id; return this; }
@@ -47,10 +47,12 @@ public class Game implements Serializable {
         public Builder setGenre(String genre) { this.genre = genre; return this; }
         public Builder setPlatform(GamePlatform platform) { this.platform = platform; return this; }
         public Builder setAvailable(boolean available) { this.available = available; return this; }
-        public Builder setType(fr.efrei.domain.GameType type) { this.type = type; return this; }
+        public Builder setType(GameType type) { this.type = type; return this; }
         public Builder setPrice(double price) { this.price = price; return this; }
 
-        public Game build() { return new Game(this); }
+        public Game build() {
+            return new Game(this);
+        }
     }
 
     @Override
@@ -67,13 +69,13 @@ public class Game implements Serializable {
     @Override
     public String toString() {
         return "Game{" +
-                "id='" + id + '\\' +
-                ", title='" + title + '\\' +
-                ", genre='" + genre + '\\' +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", genre='" + genre + '\'' +
                 ", platform=" + platform +
                 ", type=" + type +
-                ", available=" + available +
                 ", price=" + price +
+                ", available=" + available +
                 '}';
     }
 }

@@ -23,6 +23,7 @@ public class SaleRepository implements ISaleRepository {
         return DatabaseConnection.getInstance().getConnection();
     }
 
+    @Override
     public Sale save(Sale sale) {
         String sql = "INSERT INTO sales (id, customer_id, game_id, sale_date, price) VALUES (?, ?, ?, ?, ?)";
 
@@ -44,6 +45,7 @@ public class SaleRepository implements ISaleRepository {
         return null;
     }
 
+    @Override
     public Sale findById(String id) {
         String sql = "SELECT * FROM sales WHERE id = ?";
 
@@ -68,6 +70,7 @@ public class SaleRepository implements ISaleRepository {
         return null;
     }
 
+    @Override
     public List<Sale> findAll() {
         List<Sale> sales = new ArrayList<>();
         String sql = "SELECT * FROM sales ORDER BY sale_date DESC";
@@ -160,6 +163,27 @@ public class SaleRepository implements ISaleRepository {
         return 0.0;
     }
 
+    @Override
+    public boolean update(Sale sale) {
+        String sql = "UPDATE sales SET customer_id = ?, game_id = ?, sale_date = ?, price = ? WHERE id = ?";
+
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setString(1, sale.getCustomerId());
+            stmt.setString(2, sale.getGameId());
+            stmt.setDate(3, Date.valueOf(sale.getDate()));
+            stmt.setDouble(4, sale.getPrice());
+            stmt.setString(5, sale.getId());
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating sale: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean delete(String id) {
         String sql = "DELETE FROM sales WHERE id = ?";
 
