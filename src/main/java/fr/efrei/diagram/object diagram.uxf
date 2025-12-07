@@ -1,48 +1,175 @@
-<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>110</x><y>270</y><w>220</w><h>140</h></coordinates><panel_attributes>customer1 : Customer
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>21</x>
+      <y>364</y>
+      <w>154</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>customer1 : Customer
 --
 - id = "C001"
--name = "Jules Bacart"
--contactNumber = "0786642562"
--password = "jules"
--role = CUSTOMER
--credits = 100
+- name = "Jules Bacart"
+- contactNumber = "0786642562"
+- password = "jules"
+- loyaltyPoints = 100
 
-</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>290</x><y>50</y><w>180</w><h>150</h></coordinates><panel_attributes>rental1 : Rental
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>147</x>
+      <y>210</y>
+      <w>126</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>rental1 : Rental
 --
--rentalId = "R001"
--customer = customer1
--game = game1
--platform = XBOX_SERIES_X
--rentalDate = 2025-01-15
--returnDate = 2025-01-22
--returned = false</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>430</x><y>270</y><w>190</w><h>140</h></coordinates><panel_attributes>game1 : Game
+- rentalId = "R001"
+- customer = customer1
+- game = game1
+- platform = XBOX_SERIES_X
+- rentalDate = 2025-01-15
+- returnDate = 2025-01-22
+- returned = false
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>245</x>
+      <y>364</y>
+      <w>133</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>game1 : Game
 --
-id = "G001"
-title = "Forza Horizon 5"
-genre = "Racing"
-platform = XBOX_SERIES_X
-type = RENTAL
-available = true
-price = 59.99</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>210</x><y>190</y><w>160</w><h>100</h></coordinates><panel_attributes>lt=-
+- id = "G001"
+- title = "Forza Horizon 5"
+- genre = "Racing"
+- platform = XBOX_SERIES
+- type = RENTAL
+- available = true
+- price = 59.99
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>91</x>
+      <y>308</y>
+      <w>112</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=-
 m1=1
 m2=1
-</panel_attributes><additional_attributes>140;10;10;80</additional_attributes></element><element><id>Relation</id><coordinates><x>400</x><y>190</y><w>150</w><h>100</h></coordinates><panel_attributes>lt=-
+</panel_attributes>
+    <additional_attributes>140.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>224</x>
+      <y>308</y>
+      <w>105</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=-
 m1=1
 m2=1
-</panel_attributes><additional_attributes>10;10;130;80</additional_attributes></element><element><id>UMLClass</id><coordinates><x>760</x><y>250</y><w>190</w><h>120</h></coordinates><panel_attributes>customer2 : Customer
+</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>343</y>
+      <w>133</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>customer2 : Customer
 --
-id = "C002"
-name = "Lucas Rinaudo"
-contactNumber = "0645195451"
-password = "Lucas"
-role = CUSTOMER
-credits = 50</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>780</x><y>70</y><w>140</w><h>120</h></coordinates><panel_attributes>sale1 : Sale
+- id = "C002"
+- name = "Lucas Rinaudo"
+- contactNumber = "0645195451"
+- password = "Lucas"
+- loyaltyPoints = 50</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>497</x>
+      <y>182</y>
+      <w>112</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>sale1 : Sale
 --
-id = "S001"
-customerId = "C002"
-gameId = "G003"
-date = 2025-01-10
-price = 49.99</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>180</y><w>40</w><h>90</h></coordinates><panel_attributes>lt=-
+- id = "S001"
+- customer = customer2
+- game = game2
+- date = 2025-12-07
+- price = 69.99
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>490</x>
+      <y>259</y>
+      <w>84</w>
+      <h>98</h>
+    </coordinates>
+    <panel_attributes>lt=-
 m1=1
 m2=1
-</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element></diagram>
+</panel_attributes>
+    <additional_attributes>100.0;10.0;10.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>581</x>
+      <y>336</y>
+      <w>112</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>game2 : Game
+--
+- id = "G002"
+- title = "Elden Ring"
+- genre = "Action RPG"
+- platform = PS5
+- type = SALE
+- available = true
+- price = 69.99</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>553</x>
+      <y>259</y>
+      <w>105</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1
+</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;110.0</additional_attributes>
+  </element>
+</diagram>

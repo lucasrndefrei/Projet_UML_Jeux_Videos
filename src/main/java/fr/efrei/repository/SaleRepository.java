@@ -1,5 +1,7 @@
 package fr.efrei.repository;
 
+import fr.efrei.domain.Customer;
+import fr.efrei.domain.Game;
 import fr.efrei.domain.Sale;
 import fr.efrei.util.DatabaseConnection;
 
@@ -9,8 +11,13 @@ import java.util.List;
 
 public class SaleRepository implements ISaleRepository {
     private static SaleRepository instance;
+    private final CustomerRepository customerRepository;
+    private final GameRepository gameRepository;
 
-    private SaleRepository() {}
+    private SaleRepository() {
+        this.customerRepository = CustomerRepository.getInstance();
+        this.gameRepository = GameRepository.getInstance();
+    }
 
     public static SaleRepository getInstance() {
         if (instance == null) {
@@ -29,8 +36,8 @@ public class SaleRepository implements ISaleRepository {
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, sale.getId());
-            stmt.setString(2, sale.getCustomerId());
-            stmt.setString(3, sale.getGameId());
+            stmt.setString(2, sale.getCustomer().getId());
+            stmt.setString(3, sale.getGame().getId());
             stmt.setDate(4, Date.valueOf(sale.getDate()));
             stmt.setDouble(5, sale.getPrice());
 
@@ -54,13 +61,18 @@ public class SaleRepository implements ISaleRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    return new Sale(
-                            rs.getString("id"),
-                            rs.getString("customer_id"),
-                            rs.getString("game_id"),
-                            rs.getDate("sale_date").toLocalDate(),
-                            rs.getDouble("price")
-                    );
+                    Customer customer = customerRepository.findById(rs.getString("customer_id"));
+                    Game game = gameRepository.findById(rs.getString("game_id"));
+
+                    if (customer != null && game != null) {
+                        return new Sale(
+                                rs.getString("id"),
+                                customer,
+                                game,
+                                rs.getDate("sale_date").toLocalDate(),
+                                rs.getDouble("price")
+                        );
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -79,14 +91,19 @@ public class SaleRepository implements ISaleRepository {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Sale sale = new Sale(
-                        rs.getString("id"),
-                        rs.getString("customer_id"),
-                        rs.getString("game_id"),
-                        rs.getDate("sale_date").toLocalDate(),
-                        rs.getDouble("price")
-                );
-                sales.add(sale);
+                Customer customer = customerRepository.findById(rs.getString("customer_id"));
+                Game game = gameRepository.findById(rs.getString("game_id"));
+
+                if (customer != null && game != null) {
+                    Sale sale = new Sale(
+                            rs.getString("id"),
+                            customer,
+                            game,
+                            rs.getDate("sale_date").toLocalDate(),
+                            rs.getDouble("price")
+                    );
+                    sales.add(sale);
+                }
             }
         } catch (SQLException e) {
             System.err.println("Error finding all sales: " + e.getMessage());
@@ -104,14 +121,19 @@ public class SaleRepository implements ISaleRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Sale sale = new Sale(
-                            rs.getString("id"),
-                            rs.getString("customer_id"),
-                            rs.getString("game_id"),
-                            rs.getDate("sale_date").toLocalDate(),
-                            rs.getDouble("price")
-                    );
-                    sales.add(sale);
+                    Customer customer = customerRepository.findById(rs.getString("customer_id"));
+                    Game game = gameRepository.findById(rs.getString("game_id"));
+
+                    if (customer != null && game != null) {
+                        Sale sale = new Sale(
+                                rs.getString("id"),
+                                customer,
+                                game,
+                                rs.getDate("sale_date").toLocalDate(),
+                                rs.getDouble("price")
+                        );
+                        sales.add(sale);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -130,14 +152,19 @@ public class SaleRepository implements ISaleRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Sale sale = new Sale(
-                            rs.getString("id"),
-                            rs.getString("customer_id"),
-                            rs.getString("game_id"),
-                            rs.getDate("sale_date").toLocalDate(),
-                            rs.getDouble("price")
-                    );
-                    sales.add(sale);
+                    Customer customer = customerRepository.findById(rs.getString("customer_id"));
+                    Game game = gameRepository.findById(rs.getString("game_id"));
+
+                    if (customer != null && game != null) {
+                        Sale sale = new Sale(
+                                rs.getString("id"),
+                                customer,
+                                game,
+                                rs.getDate("sale_date").toLocalDate(),
+                                rs.getDouble("price")
+                        );
+                        sales.add(sale);
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -168,8 +195,8 @@ public class SaleRepository implements ISaleRepository {
         String sql = "UPDATE sales SET customer_id = ?, game_id = ?, sale_date = ?, price = ? WHERE id = ?";
 
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
-            stmt.setString(1, sale.getCustomerId());
-            stmt.setString(2, sale.getGameId());
+            stmt.setString(1, sale.getCustomer().getId());
+            stmt.setString(2, sale.getGame().getId());
             stmt.setDate(3, Date.valueOf(sale.getDate()));
             stmt.setDouble(4, sale.getPrice());
             stmt.setString(5, sale.getId());
